@@ -1,3 +1,4 @@
 /build/allure-results/*
 /build/*
 /reports/*
+/.gradle/*
