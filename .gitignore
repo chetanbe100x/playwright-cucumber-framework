@@ -6,3 +6,5 @@
 /screenshots/*
 /logs/*
 /target/*
+/gradlew
+/gradlew.bat
