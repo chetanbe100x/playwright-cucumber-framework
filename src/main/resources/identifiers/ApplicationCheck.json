@@ -1,0 +1,98 @@
+{
+  "usernameField": {
+    "type": "xpath",
+    "value": "//input[@id='user-name']"
+  },
+  "passwordField": {
+    "type": "xpath",
+    "value": "//input[@id='password']"
+  },
+  "loginButton": {
+    "type": "xpath",
+    "value": "//input[@id='login-button']"
+  },
+  "dashboardElement": {
+    "type": "xpath",
+    "value": "//div[text()='Swar Labs']"
+  },
+  "adminLink": {
+    "type": "css",
+    "value": "a.nav-link[href='/admin']"
+  },
+  "reportsLink": {
+    "type": "css",
+    "value": "a.nav-link[href='/reports']"
+  },
+  "settingsLink": {
+    "type": "css",
+    "value": "a.nav-link[href='/settings']"
+  },
+  "adminLoadIndicator": {
+    "type": "css",
+    "value": "div.admin-panel h1"
+  },
+  "reportsLoadIndicator": {
+    "type": "css",
+    "value": "div.reports-dashboard h1"
+  },
+  "settingsLoadIndicator": {
+    "type": "css",
+    "value": "div.settings-panel h1"
+  },
+  "formField1": {
+    "type": "css",
+    "value": "input#field1"
+  },
+  "formField2": {
+    "type": "css",
+    "value": "input#field2"
+  },
+  "formDropdown": {
+    "type": "css",
+    "value": "select#dropdown"
+  },
+  "submitButton": {
+    "type": "css",
+    "value": "button#submit-btn"
+  },
+  "confirmationMessage": {
+    "type": "css",
+    "value": "div.confirmation-message"
+  },
+  "dataTable": {
+    "type": "css",
+    "value": "table.data-table"
+  },
+  "dataRow": {
+    "type": "css",
+    "value": "table.data-table tbody tr"
+  },
+  "dataCell": {
+    "type": "css",
+    "value": "table.data-table tbody tr:first-child td:first-child"
+  },
+  "userMenuButton": {
+    "type": "css",
+    "value": "button.user-menu"
+  },
+  "logoutOption": {
+    "type": "css",
+    "value": "a.logout-link"
+  },
+  "loginPage": {
+    "type": "css",
+    "value": "div.login-container"
+  },
+  "frameExample": {
+    "type": "css",
+    "value": "iframe#content-frame"
+  },
+  "frameButtonExample": {
+    "type": "css",
+    "value": "button.frame-button"
+  },
+  "errorMessage": {
+    "type": "css",
+    "value": "div.error-message"
+  }
+}

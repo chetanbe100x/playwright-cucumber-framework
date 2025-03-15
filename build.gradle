@@ -1,0 +1,150 @@
+plugins {
+    id 'java'
+    id 'groovy'
+    id 'io.qameta.allure' version '2.11.2'
+}
+
+group 'com.framework'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 17
+targetCompatibility = 17
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    playwrightVersion = '1.40.0'
+    cucumberVersion = '7.15.0'
+    extentVersion = '1.14.0'
+    log4jVersion = '2.22.0'
+    poiVersion = '5.2.5'
+    jacksonVersion = '2.16.0'
+}
+
+dependencies {
+    // Playwright
+    implementation "com.microsoft.playwright:playwright:${playwrightVersion}"
+
+    // Cucumber
+    implementation "io.cucumber:cucumber-java:${cucumberVersion}"
+    implementation "io.cucumber:cucumber-junit:${cucumberVersion}"
+    implementation "io.cucumber:cucumber-picocontainer:${cucumberVersion}"
+
+    // Extent Reports - using latest version explicitly
+    implementation "tech.grasshopper:extentreports-cucumber7-adapter:${extentVersion}"
+    implementation "com.aventstack:extentreports:5.1.1"
+
+    // Logging
+    implementation "org.apache.logging.log4j:log4j-api:${log4jVersion}"
+    implementation "org.apache.logging.log4j:log4j-core:${log4jVersion}"
+
+    // Apache POI for Excel
+    implementation "org.apache.poi:poi:${poiVersion}"
+    implementation "org.apache.poi:poi-ooxml:${poiVersion}"
+
+    // JSON Parsing
+    implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+
+    // JUnit
+    testImplementation 'junit:junit:4.13.2'
+}
+
+// Create all necessary resources
+task prepareResources {
+    doLast {
+        // Create directories with logging
+        println "Creating directories..."
+        file("${projectDir}/reports").mkdirs()
+        file("${projectDir}/reports/SparkReport").mkdirs()
+        file("${projectDir}/reports/screenshots").mkdirs()
+        file("${projectDir}/src/test/resources").mkdirs()
+
+        // Create extent.properties with absolute paths
+        println "Creating extent.properties..."
+        def extentPropsFile = file("${projectDir}/src/test/resources/extent.properties")
+        extentPropsFile.text = """
+# Start ExtentReports
+extent.reporter.spark.start=true
+extent.reporter.spark.out=reports/SparkReport/ExtentSpark.html
+
+# Use absolute paths to avoid issues
+basefolder.name=${projectDir}/reports
+basefolder.datetimepattern=
+
+# Important settings for proper organization
+extent.reporter.spark.config=src/test/resources/extent-config.xml
+extent.reporter.spark.vieworder=dashboard,test,category,exception,author,device,log
+
+# Screenshots
+screenshot.dir=${projectDir}/reports/screenshots
+screenshot.rel.path=../screenshots/
+
+# Don't skip any tests
+extent.reporter.spark.enable.device=true
+extent.reporter.spark.base64imagesrc=true
+"""
+        println "Created extent.properties at: ${extentPropsFile.absolutePath}"
+
+        // Create the extent-config.xml file
+        println "Creating extent-config.xml..."
+        def extentConfigFile = file("${projectDir}/src/test/resources/extent-config.xml")
+        extentConfigFile.text = """<?xml version="1.0" encoding="UTF-8"?>
+<extentreports>
+    <configuration>
+        <theme>dark</theme>
+        <encoding>UTF-8</encoding>
+        <protocol>https</protocol>
+        <documentTitle>Test Report</documentTitle>
+        <reportName>Cucumber Test Results</reportName>
+        <timeStampFormat>MMM dd, yyyy HH:mm:ss</timeStampFormat>
+    </configuration>
+</extentreports>
+"""
+        println "Created extent-config.xml at: ${extentConfigFile.absolutePath}"
+    }
+}
+
+// Clean reports directory
+task cleanReports(type: Delete) {
+    delete fileTree(dir: "${projectDir}/reports/SparkReport", include: "**/*")
+    delete fileTree(dir: "${projectDir}/reports/screenshots", include: "**/*")
+}
+
+// Main test task
+test {
+    dependsOn prepareResources, cleanReports
+
+    useJUnit()
+
+    // Run sequentially
+    maxParallelForks = 2
+
+    // Important: Properly configure Cucumber for ExtentReports
+    systemProperty "cucumber.plugin", "pretty, html:reports/cucumber.html, json:reports/cucumber.json, com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:"
+
+    // Parallel configuration
+    systemProperty "cucumber.execution.parallel.enabled", "true"
+    systemProperty "cucumber.execution.parallel.config.strategy", "fixed"
+    systemProperty "cucumber.execution.parallel.config.fixed.parallelism", "4"
+
+    testLogging {
+        events "passed", "skipped", "failed"
+        showStandardStreams = true
+    }
+
+    doFirst {
+        println "Starting tests at ${new Date()}"
+        println "Working directory: ${projectDir}"
+        println "Cucumber plugins: ${systemProperties['cucumber.plugin']}"
+    }
+
+    doLast {
+        println "Tests completed at ${new Date()}"
+        println "Report should be available at: ${projectDir}/reports/SparkReport/ExtentSpark.html"
+    }
+}
+
+// Default task
+defaultTasks 'test'
