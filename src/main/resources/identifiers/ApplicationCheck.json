@@ -13,7 +13,7 @@
   },
   "dashboardElement": {
     "type": "xpath",
-    "value": "//div[text()='Swar Labs']"
+    "value": "//div[text()='Swag Labs']"
   },
   "adminLink": {
     "type": "css",

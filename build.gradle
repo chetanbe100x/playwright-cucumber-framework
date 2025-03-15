@@ -51,78 +51,68 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
 }
 
-// Create all necessary resources
-task prepareResources {
+// Create report directories
+task createReportDirs {
     doLast {
-        // Create directories with logging
-        println "Creating directories..."
-        file("${projectDir}/reports").mkdirs()
         file("${projectDir}/reports/SparkReport").mkdirs()
         file("${projectDir}/reports/screenshots").mkdirs()
-        file("${projectDir}/src/test/resources").mkdirs()
-
-        // Create extent.properties with absolute paths
-        println "Creating extent.properties..."
-        def extentPropsFile = file("${projectDir}/src/test/resources/extent.properties")
-        extentPropsFile.text = """
-# Start ExtentReports
-extent.reporter.spark.start=true
-extent.reporter.spark.out=reports/SparkReport/ExtentSpark.html
-
-# Use absolute paths to avoid issues
-basefolder.name=${projectDir}/reports
-basefolder.datetimepattern=
-
-# Important settings for proper organization
-extent.reporter.spark.config=src/test/resources/extent-config.xml
-extent.reporter.spark.vieworder=dashboard,test,category,exception,author,device,log
-
-# Screenshots
-screenshot.dir=${projectDir}/reports/screenshots
-screenshot.rel.path=../screenshots/
-
-# Don't skip any tests
-extent.reporter.spark.enable.device=true
-extent.reporter.spark.base64imagesrc=true
-"""
-        println "Created extent.properties at: ${extentPropsFile.absolutePath}"
-
-        // Create the extent-config.xml file
-        println "Creating extent-config.xml..."
-        def extentConfigFile = file("${projectDir}/src/test/resources/extent-config.xml")
-        extentConfigFile.text = """<?xml version="1.0" encoding="UTF-8"?>
-<extentreports>
-    <configuration>
-        <theme>dark</theme>
-        <encoding>UTF-8</encoding>
-        <protocol>https</protocol>
-        <documentTitle>Test Report</documentTitle>
-        <reportName>Cucumber Test Results</reportName>
-        <timeStampFormat>MMM dd, yyyy HH:mm:ss</timeStampFormat>
-    </configuration>
-</extentreports>
-"""
-        println "Created extent-config.xml at: ${extentConfigFile.absolutePath}"
+        file("${projectDir}/logs").mkdirs()
+        file("${projectDir}/build/cucumber-reports").mkdirs()
     }
 }
 
 // Clean reports directory
 task cleanReports(type: Delete) {
-    delete fileTree(dir: "${projectDir}/reports/SparkReport", include: "**/*")
-    delete fileTree(dir: "${projectDir}/reports/screenshots", include: "**/*")
+    delete fileTree(dir: "${projectDir}/reports/", include: "**/*")
+    //delete fileTree(dir: "${projectDir}/reports/screenshots", include: "**/*")
+}
+
+// Class for generating the report - embedded directly in the build script
+task generateReport {
+    // Important: don't make this depend on the test task, as we want it to run even if tests fail
+    doLast {
+        println "Generating unified test report..."
+
+        // Add a slight delay to ensure all JSON files are fully written
+        sleep(2000)
+
+        // Execute GenericReportGenerator with its classpath
+        javaexec {
+            // Ensure all needed classes are on the classpath
+            classpath = sourceSets.main.runtimeClasspath +
+                    sourceSets.main.output +
+                    sourceSets.test.runtimeClasspath
+
+            // Use the fully qualified class name
+            mainClass = 'com.framework.utils.GenericReportGenerator'
+
+            // Handle any exceptions during execution
+            ignoreExitValue = true
+
+            // Show standard output for better diagnostics
+            standardOutput = System.out
+            errorOutput = System.err
+        }
+
+        println "Report generation completed!"
+        println "Report available at: ${projectDir}/reports/SparkReport/ExtentSpark.html"
+    }
 }
 
 // Main test task
 test {
-    dependsOn prepareResources, cleanReports
+    dependsOn createReportDirs, cleanReports
 
     useJUnit()
 
-    // Run sequentially
+    // Important: continue with generation even if tests fail
+    ignoreFailures = true
+
+    // Run sequentially to avoid JSON file conflicts
     maxParallelForks = 2
 
-    // Important: Properly configure Cucumber for ExtentReports
-    systemProperty "cucumber.plugin", "pretty, html:reports/cucumber.html, json:reports/cucumber.json, com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:"
+    // Configure Cucumber to generate JSON reports
+    systemProperty "cucumber.plugin", "pretty, json:build/cucumber-reports/cucumber.json, com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:"
 
     // Parallel configuration
     systemProperty "cucumber.execution.parallel.enabled", "true"
@@ -139,12 +129,22 @@ test {
         println "Working directory: ${projectDir}"
         println "Cucumber plugins: ${systemProperties['cucumber.plugin']}"
     }
+}
 
+// Main execution tasks
+task runTests(dependsOn: test) {
     doLast {
-        println "Tests completed at ${new Date()}"
-        println "Report should be available at: ${projectDir}/reports/SparkReport/ExtentSpark.html"
+        println "Tests completed, starting report generation..."
     }
+
+    // This must be a finalizedBy, not a dependsOn, so it runs even when tests fail
+    finalizedBy generateReport
 }
 
 // Default task
-defaultTasks 'test'
+defaultTasks 'runTests'
+
+// Show report file location after build completes
+gradle.buildFinished {
+    println "\nBuild completed. Test report location: ${projectDir}/reports/SparkReport/ExtentSpark.html\n"
+}
