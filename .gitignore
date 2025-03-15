@@ -1,2 +1,2 @@
-^build/allure-results/.*$
+/build/allure-results/*
 /build/allure-results/5d48cd14-12b1-479a-be92-6d391dbf3e99-result.json
