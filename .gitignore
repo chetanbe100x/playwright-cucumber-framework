@@ -3,4 +3,5 @@
 /reports/*
 /.gradle/*
 /.idea/*
-/screenshots/
+/screenshots/*
+/logs/*
