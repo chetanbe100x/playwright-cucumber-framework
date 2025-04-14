@@ -1,0 +1,26 @@
+[
+  {
+    "name": "Element not found failures",
+    "matchedStatuses": ["failed"],
+    "messageRegex": ".*Element not found.*"
+  },
+  {
+    "name": "Timeout failures",
+    "matchedStatuses": ["failed"],
+    "messageRegex": ".*timeout.*"
+  },
+  {
+    "name": "Navigation failures",
+    "matchedStatuses": ["failed"],
+    "messageRegex": ".*Failed to navigate.*"
+  },
+  {
+    "name": "Assertion failures",
+    "matchedStatuses": ["failed"],
+    "messageRegex": ".*AssertionError.*"
+  },
+  {
+    "name": "Other failures",
+    "matchedStatuses": ["failed"]
+  }
+]
