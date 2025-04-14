@@ -1,0 +1,114 @@
+{
+  "sortDropdown": {
+    "type": "xpath",
+    "value": "//select[@class='product_sort_container']"
+  },
+  "cartLink": {
+    "type": "xpath",
+    "value": "//a[@class='shopping_cart_link']"
+  },
+  "cartBadge": {
+    "type": "xpath",
+    "value": "//span[@class='shopping_cart_badge']"
+  },
+  "cartPageTitle": {
+    "type": "xpath",
+    "value": "//span[text()='Your Cart']"
+  },
+  "checkoutButton": {
+    "type": "xpath",
+    "value": "//button[@id='checkout']"
+  },
+  "checkoutPageTitle": {
+    "type": "xpath",
+    "value": "//span[text()='Checkout: Your Information']"
+  },
+  "firstNameField": {
+    "type": "xpath",
+    "value": "//input[@id='first-name']"
+  },
+  "lastNameField": {
+    "type": "xpath",
+    "value": "//input[@id='last-name']"
+  },
+  "postalCodeField": {
+    "type": "xpath",
+    "value": "//input[@id='postal-code']"
+  },
+  "continueButton": {
+    "type": "xpath",
+    "value": "//input[@id='continue'] | //button[@id='continue']"
+  },
+  "checkoutOverviewTitle": {
+    "type": "xpath",
+    "value": "//span[text()='Checkout: Overview']"
+  },
+  "finishButton": {
+    "type": "xpath",
+    "value": "//button[@id='finish']"
+  },
+  "orderCompleteTitle": {
+    "type": "xpath",
+    "value": "//span[text()='Checkout: Complete!']"
+  },
+  "thankYouMessage": {
+    "type": "xpath",
+    "value": "//h2[text()='Thank you for your order!']"
+  },
+  "backToProductsButton": {
+    "type": "xpath",
+    "value": "//button[@id='back-to-products']"
+  },
+  "productsTitle": {
+    "type": "xpath",
+    "value": "//span[text()='Products']"
+  },
+  "removeButton": {
+    "type": "xpath",
+    "value": "//button[contains(@id, 'remove')]"
+  },
+  "productPrice": {
+    "type": "xpath",
+    "value": "//div[@class='inventory_item_price']"
+  },
+  "productDescription": {
+    "type": "xpath",
+    "value": "//div[@class='inventory_item_desc']"
+  },
+  "burgerMenuButton": {
+    "type": "xpath",
+    "value": "//button[@id='react-burger-menu-btn']"
+  },
+  "logoutSidebarLink": {
+    "type": "xpath",
+    "value": "//a[@id='logout_sidebar_link']"
+  },
+  "resetSidebarLink": {
+    "type": "xpath",
+    "value": "//a[@id='reset_sidebar_link']"
+  },
+  "closeSidebarButton": {
+    "type": "xpath",
+    "value": "//button[@id='react-burger-cross-btn']"
+  },
+  "inventoryContainer": {
+    "type": "xpath",
+    "value": "//div[@class='inventory_container']"
+  },
+  "inventoryItem": {
+    "type": "xpath",
+    "value": "//div[@class='inventory_item']"
+  },
+  "itemTotal": {
+    "type": "xpath",
+    "value": "//div[@class='summary_subtotal_label']"
+  },
+  "tax": {
+    "type": "xpath",
+    "value": "//div[@class='summary_tax_label']"
+  },
+  "totalPrice": {
+    "type": "xpath",
+    "value": "//div[@class='summary_total_label']"
+  }
+}

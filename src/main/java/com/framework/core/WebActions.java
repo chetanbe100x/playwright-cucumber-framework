@@ -217,6 +217,41 @@ public class WebActions {
     }
 
     /**
+     * Checks if an element is visible on the page
+     *
+     * @param locator Element locator
+     * @return true if element is visible, false otherwise
+     */
+    public boolean isElementVisible(String locator) {
+        LOGGER.info("Checking if element is visible: " + locator);
+        try {
+            ElementHandle element = getPage().querySelector(locator);
+            return element != null && element.isVisible();
+        } catch (Exception e) {
+            LOGGER.debug("Element not visible: " + locator);
+            return false;
+        }
+    }
+
+    /**
+     * Gets text from an element, automatically finding it in any frame
+     *
+     * @param locator Element locator
+     * @return Text content of the element
+     */
+    public String getText(String locator) {
+        LOGGER.info("Getting text from element: " + locator);
+        try {
+            ElementSearchResult result = findElementAcrossFrames(locator);
+            return result.element.textContent();
+        } catch (Exception e) {
+            LOGGER.error("Failed to get text from element: " + locator, e);
+            captureScreenshot("get_text_error");
+            throw e;
+        }
+    }
+
+    /**
      * Selects an option from dropdown by visible text, automatically finding it in any frame
      *
      * @param locator Dropdown element locator
@@ -238,20 +273,6 @@ public class WebActions {
         performActionAcrossFrames(locator,
                 element -> element.selectOption(new SelectOption().setIndex(index)),
                 "Selecting index from dropdown");
-    }
-
-    /**
-     * Gets text from an element, automatically finding it in any frame
-     *
-     * @param locator Element locator
-     * @return Element text
-     */
-    public String getText(String locator) {
-        AtomicReference<String> text = new AtomicReference<>("");
-        performActionAcrossFrames(locator,
-                element -> text.set(element.textContent()),
-                "Getting text from");
-        return text.get();
     }
 
     /**

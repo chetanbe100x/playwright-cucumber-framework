@@ -221,4 +221,42 @@ public class CommonSteps {
     public Map<String, String> getTestData() {
         return testData;
     }
+
+    /**
+     * Calls a method with a parameter from a specified component
+     *
+     * @param methodName Name of the method to call
+     * @param parameter Parameter to pass to the method
+     * @param componentPath Fully qualified path to the component class
+     * @throws Exception if method invocation fails
+     */
+    @And("user calls method {string} with parameter {string} from component {string}")
+    public void userCallsMethodWithParameterFromComponent(String methodName, String parameter, String componentPath) throws Exception {
+        LOGGER.info("Calling method: " + methodName + " with parameter: " + parameter + " from component: " + componentPath);
+
+        // Extract component name from the fully qualified path
+        String componentName = componentPath.substring(componentPath.lastIndexOf('.') + 1);
+
+        // Load test data for this specific component based on active tags
+        loadTestDataForComponent(componentName);
+
+        // Get or create component instance
+        Object componentInstance = getOrCreateComponentInstance(componentPath);
+
+        // Find the method with a String parameter
+        Method method = componentInstance.getClass().getMethod(methodName, String.class);
+
+        // Invoke the method with the parameter
+        Object result = method.invoke(componentInstance, parameter);
+
+        // Handle boolean results (for verification methods)
+        if (result instanceof Boolean) {
+            boolean success = (Boolean) result;
+            if (!success) {
+                throw new AssertionError("Verification failed in method: " + methodName + " with parameter: " + parameter);
+            }
+        }
+
+        LOGGER.info("Method executed successfully: " + methodName + " with parameter: " + parameter);
+    }
 }
