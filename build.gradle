@@ -109,6 +109,7 @@ task generateReport {
 
 // Main test task
 test {
+    outputs.upToDateWhen { false }
     dependsOn createReportDirs, cleanReports
 
     useJUnit()
