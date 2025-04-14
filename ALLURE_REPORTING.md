@@ -21,6 +21,16 @@ To view Allure reports, you need to have the Allure command-line tool installed:
 2. Double-click on `viewAllureResults.bat` in your project directory
 3. This will start the Allure server and open the report in your browser
 
+### Viewing Reports with History Tracking
+
+To view reports with test execution history:
+
+1. Run your tests to generate Allure results
+2. Double-click on `allure-with-history.bat` in your project directory
+3. This will generate a full report with history and open it in your browser
+
+Note: For history tracking to work, you should use `allure-with-history.bat` after each test run.
+
 ## Installing Allure Command-line Tool
 
 To use Allure reporting, you need to install the Allure command-line tool:
@@ -44,6 +54,21 @@ Allure captures detailed information about test execution:
 - Test status (passed, failed, skipped)
 - Test duration
 - Failure details
+
+### History Tracking
+
+Allure maintains history of test executions across multiple runs:
+
+- **Test Status History**: Track when tests pass or fail over time
+- **Duration Trends**: See how test execution time changes
+- **Failure Categories**: Monitor types of failures over time
+
+History data is stored in JSON files in the `allure-report/history/` directory:
+- `history.json`: Overall test execution statistics
+- `history-trend.json`: Status trends over time
+- `duration-trend.json`: Execution duration trends
+- `categories-trend.json`: Failure categories over time
+- `retry-trend.json`: Test retry statistics
 
 ## Troubleshooting
 
