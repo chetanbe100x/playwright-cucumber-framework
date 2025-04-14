@@ -16,7 +16,8 @@ import org.junit.runner.RunWith;
                 "html:target/cucumber-reports/cucumber-pretty.html",
                 "json:target/cucumber-reports/TestRunner.json",
                 "rerun:target/cucumber-reports/rerun.txt",
-                "com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:"
+                "com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:",
+                "io.qameta.allure.cucumber7jvm.AllureCucumber7Jvm"
         },
         monochrome = true,
         tags = "@Smoke",

@@ -21,6 +21,7 @@ ext {
     log4jVersion = '2.22.0'
     poiVersion = '5.2.5'
     jacksonVersion = '2.16.0'
+    allureVersion = '2.24.0'
 }
 
 dependencies {
@@ -35,6 +36,11 @@ dependencies {
     // Extent Reports - using latest version explicitly
     implementation "tech.grasshopper:extentreports-cucumber7-adapter:${extentVersion}"
     implementation "com.aventstack:extentreports:5.1.1"
+
+    // Allure Reports
+    implementation "io.qameta.allure:allure-cucumber7-jvm:${allureVersion}"
+    implementation "io.qameta.allure:allure-junit4:${allureVersion}"
+    implementation "org.aspectj:aspectjweaver:1.9.20.1"
 
     // Logging
     implementation "org.apache.logging.log4j:log4j-api:${log4jVersion}"
@@ -58,6 +64,8 @@ task createReportDirs {
         file("${projectDir}/reports/screenshots").mkdirs()
         file("${projectDir}/logs").mkdirs()
         file("${projectDir}/build/cucumber-reports").mkdirs()
+        file("${projectDir}/build/allure-results").mkdirs()
+        file("${projectDir}/allure-report").mkdirs()
     }
 }
 
@@ -112,7 +120,7 @@ test {
     maxParallelForks = 2
 
     // Configure Cucumber to generate JSON reports
-    systemProperty "cucumber.plugin", "pretty, json:build/cucumber-reports/cucumber.json, com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:"
+    systemProperty "cucumber.plugin", "pretty, json:build/cucumber-reports/cucumber.json, com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter:, io.qameta.allure.cucumber7jvm.AllureCucumber7Jvm"
 
     // Parallel configuration
     systemProperty "cucumber.execution.parallel.enabled", "true"
@@ -146,5 +154,13 @@ defaultTasks 'runTests'
 
 // Show report file location after build completes
 gradle.buildFinished {
-    println "\nBuild completed. Test report location: ${projectDir}/reports/SparkReport/ExtentSpark.html\n"
+    println "\nBuild completed.\n"
+    println "Extent Report location: ${projectDir}/reports/SparkReport/ExtentSpark.html"
+    println "Allure results location: ${projectDir}/build/allure-results"
+    println "Run 'viewAllureReport.bat' to see the Allure report\n"
+}
+
+// Configure Allure
+allure {
+    version = allureVersion
 }
