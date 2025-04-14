@@ -8,4 +8,4 @@
 /target/*
 /gradlew
 /gradlew.bat
-/gradlew/*
+/gradle/wrapper/*
