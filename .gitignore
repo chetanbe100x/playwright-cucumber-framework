@@ -11,3 +11,4 @@
 /gradle/wrapper/*
 /allure-report/*
 
+/allure-viewer.html
