@@ -114,8 +114,9 @@ test {
 
     useJUnit()
 
-    // Important: continue with generation even if tests fail
-    ignoreFailures = true
+    // In local dev we allow report generation to continue even if tests fail.
+    // In CI (CI env var present), fail the build on test failures.
+    ignoreFailures = System.getenv("CI") == null
 
     // Run sequentially to avoid JSON file conflicts
     maxParallelForks = 2

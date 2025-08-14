@@ -1,0 +1,83 @@
+# GitLab CI for Gradle + Playwright (Java) + Cucumber
+# Uses Microsoft's Playwright Java image (has OS deps & browsers). Installs Gradle in job.
+
+image: mcr.microsoft.com/playwright/java:v1.40.0-jammy
+
+stages:
+  - test
+
+variables:
+  # Keep Gradle caches inside the workspace so GitLab can cache them
+  GRADLE_USER_HOME: "$CI_PROJECT_DIR/.gradle"
+  # Ensure consistent JVM heap if needed
+  _JAVA_OPTIONS: "-Xmx2g"
+  # Optional: run only certain tags (e.g. set to @Smoke, @Regression)
+  CUCUMBER_TAGS: ""
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - .gradle/wrapper
+    - .gradle/caches
+    - ms-playwright
+
+before_script:
+  # Update package index (image is Debian/Ubuntu based)
+  - apt-get update -y
+  # Install gradle (wrapper is not present in repo). Alternatively, add Gradle wrapper to the repo and use it instead.
+  - apt-get install -y --no-install-recommends gradle
+  - java -version
+  - gradle -v | sed -n '1,5p' | cat
+  # Create a CI-specific config to force headless and reduce noise in CI
+  - |
+    cat > ci-config.properties <<'EOF'
+    base.url=https://www.saucedemo.com/
+    browser.headless=true
+    browser.slowmo=0
+    browser.timeout=30000
+    element.timeout=10000
+    viewport.width=1280
+    viewport.height=720
+    tracing.enabled=false
+    video.recording=false
+    browser.devtools=false
+    browser.args=--disable-web-security,--disable-site-isolation-trials
+    screenshots.dir=reports/screenshots
+    testdata.dir=src/test/resources/testdata
+    identifiers.dir=src/main/resources/identifiers
+    extent.reporter.spark.start=true
+    extent.reporter.spark.out=reports/SparkReport/Spark.html
+    extent.reporter.spark.config=src/test/resources/extent-config.xml
+    screenshot.rel.path=../screenshots/
+    screenshot.dir=screenshots
+    extent.reporter.pdf.start=false
+    extent.reporter.pdf.out=reports/PdfReport/ExtentPdf.pdf
+    EOF
+
+test:
+  stage: test
+  script:
+    # Clean and run tests; your Gradle default task runs tests and then generates the Extent report
+    - gradle clean runTests -Dconfig.file=ci-config.properties -Dcucumber.filter.tags="$CUCUMBER_TAGS" --no-daemon --stacktrace | cat
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      # Extent report and screenshots
+      - reports/SparkReport/
+      - reports/screenshots/
+      # Cucumber JSONs from various locations your build may write to
+      - build/cucumber-reports/
+      - target/cucumber-reports/
+      # Allure results (can be used by external job/viewer)
+      - build/allure-results/
+      # Gradle test reports (HTML)
+      - build/reports/tests/
+    reports:
+      junit:
+        - build/test-results/test/*.xml
+  # If you use specific GitLab runners with tags, uncomment and set your runner tags
+  # tags:
+  #   - docker
+
+
